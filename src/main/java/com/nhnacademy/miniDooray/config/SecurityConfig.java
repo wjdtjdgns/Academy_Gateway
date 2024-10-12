@@ -3,6 +3,8 @@ package com.nhnacademy.miniDooray.config;
 import com.nhnacademy.miniDooray.filter.UserAuthenticationFilter;
 import com.nhnacademy.miniDooray.handler.CustomLoginSuccessHandler;
 import com.nhnacademy.miniDooray.handler.CustomLogoutSuccessHandler;
+import com.nhnacademy.miniDooray.provider.CustomAuthenticationProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +20,17 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorizeRequests ->
+        http.authenticationProvider(customAuthenticationProvider)
+                .authorizeHttpRequests(authorizeRequests ->
                                 authorizeRequests
                                         .requestMatchers("/login").permitAll()
                                         .anyRequest().authenticated()
