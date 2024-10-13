@@ -34,7 +34,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String rawPassword = authentication.getCredentials().toString();
 
         try {
-            String url = "http://localhost:8081/member/" + id;
+            String url = "http://localhost:8081/members/" + id;
             ResponseEntity<MemberDto> response = restApiClient.sendGetRequest(url, MemberDto.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {

@@ -22,7 +22,7 @@ public class MemberService {
         memberDto.setStatus(Status.REGISTERED);
         memberDto.setPassword(passwordEncoder.encode(memberDto.getPassword()));
 
-        String url = "http://localhost:8081/member/register";
+        String url = "http://localhost:8081/members/register";
         ResponseEntity<MemberDto> response = restApiClient.sendPostRequest(url, memberDto, MemberDto.class);
 
         if (response.getStatusCode() == HttpStatus.CREATED) {

@@ -28,8 +28,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                                 authorizeRequests
                                         .requestMatchers("/login").permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/member/register").permitAll()
-                                        .requestMatchers(HttpMethod.POST, "/member/register").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/members/register").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/members/register").permitAll()
                                         .anyRequest().authenticated()
 //                                      .anyRequest().permitAll()
                 );
