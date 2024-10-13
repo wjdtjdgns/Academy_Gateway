@@ -31,6 +31,6 @@ public class CustomLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        super.onAuthenticationSuccess(request, response, authentication);
+        response.sendRedirect("/projects");
     }
 }

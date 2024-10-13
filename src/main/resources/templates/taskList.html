@@ -1,15 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <title>태스크 리스트</title>
 </head>
 <body>
-<div id="task-list">
-  <h2>태스크 리스트</h2>
-  <ul>
-    <li th:each="task : ${tasks}" class="task-item" th:data-task-id="${task.taskId}" th:text="${task.title}"></li>
-  </ul>
+<h2 th:text="'프로젝트: ' + ${projectId} + ' - 태스크 리스트'">태스크 리스트</h2>
+
+<div>
+    <a href="/projects">프로젝트 목록으로 돌아가기</a>
 </div>
+
+<hr />
+
+<!-- 멤버 관리 섹션 (프로젝트 관리자만 접근 가능) -->
+<div id="member-management" th:if="${isAdmin}">
+    <h3>멤버 관리</h3>
+    <form th:action="@{|/projects/${projectId}/members|}" method="post">
+        <label for="memberId">멤버 ID:</label>
+        <input type="text" id="memberId" name="memberId" />
+        <button type="submit">멤버 추가</button>
+    </form>
+
+    <br />
+    <h4>프로젝트 멤버 리스트</h4>
+    <ul>
+        <li th:each="member : ${members}">
+            <span th:text="${member.name}"></span> (ID: <span th:text="${member.id}"></span>)
+        </li>
+    </ul>
+</div>
+
+<hr />
+
+<!-- 태그 관리 섹션 -->
+<div id="tag-management">
+    <h3>태그 관리</h3>
+    <form th:action="@{|/projects/${projectId}/tags|}" method="post">
+        <label for="tagName">태그 이름:</label>
+        <input type="text" id="tagName" name="tagName" />
+        <button type="submit">태그 추가</button>
+    </form>
+
+    <br />
+    <h4>프로젝트 태그 리스트</h4>
+    <ul>
+        <li th:each="tag : ${tags}">
+            <span th:text="${tag.name}"></span>
+            <form th:action="@{|/projects/${projectId}/tags/${tag.id}|}" method="post" style="display: inline;">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit">삭제</button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<hr />
+
+<!-- 마일스톤 관리 섹션 -->
+<div id="milestone-management">
+    <h3>마일스톤 관리</h3>
+    <form th:action="@{|/projects/${projectId}/milestones|}" method="post" onsubmit="return validateDates()">
+        <label for="milestoneTitle">마일스톤 제목:</label>
+        <input type="text" id="milestoneTitle" name="milestoneTitle" />
+        <label for="startDate">시작일:</label>
+        <input type="date" id="startDate" name="startDate" />
+        <label for="endDate">종료일:</label>
+        <input type="date" id="endDate" name="endDate" />
+        <button type="submit">마일스톤 추가</button>
+    </form>
+
+    <br />
+    <h4>프로젝트 마일스톤 리스트</h4>
+    <ul>
+        <li th:each="milestone : ${milestones}">
+            <span th:text="${milestone.title}"></span>
+            (<span th:text="${milestone.startDate}"></span> ~ <span th:text="${milestone.endDate}"></span>)
+            <form th:action="@{|/projects/${projectId}/milestones/${milestone.id}|}" method="post" style="display: inline;">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit">삭제</button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<hr />
+
+<div id="task-list">
+    <h3>태스크 목록</h3>
+    <a th:href="@{|/projects/${projectId}/tasks/add|}">태스크 추가</a>
+
+    <ul>
+        <li th:each="task : ${tasks}">
+            <a th:href="@{|/tasks/${task.id}|}" th:text="${task.title}"></a>
+        </li>
+    </ul>
+</div>
+<script>
+    function validateDates() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (startDate && endDate && endDate < startDate) {
+            alert("종료일은 시작일보다 빠를 수 없습니다.");
+            return false;
+        }
+        return true;
+    }
+</script>
 </body>
 </html>

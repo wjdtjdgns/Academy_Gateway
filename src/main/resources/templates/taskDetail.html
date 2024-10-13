@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+  <meta charset="UTF-8" />
+  <title>태스크 상세 정보</title>
 </head>
 <body>
+<h2 th:text="'태스크: ' + ${task.title}">태스크 상세 정보</h2>
+
+<div>
+  <a href="/projects" th:href="'/projects/' + ${task.projectId} + '/tasks'">태스크 목록으로 돌아가기</a>
+</div>
+
 <div id="task-detail">
-  <h3 th:text="${task.title}"></h3>
-  <p th:text="${task.content}"></p>
+  <h3 th:text="${task.title}">태스크 제목</h3>
+  <p th:text="${task.content}">태스크 내용</p>
+
+  <h4>댓글 목록</h4>
   <div id="comments">
-    <h4>댓글 목록</h4>
-    <div th:each="comment : ${comments}">
-      <p th:text="${comment.memberName} + ' : ' + ${comment.content}"></p>
-    </div>
+    <ul>
+      <li th:each="comment : ${comments}">
+        <p th:text="${comment.memberName} + ': ' + ${comment.content}"></p>
+      </li>
+    </ul>
   </div>
 </div>
+
 </body>
 </html>

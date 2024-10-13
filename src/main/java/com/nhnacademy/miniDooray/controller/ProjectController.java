@@ -46,4 +46,39 @@ public class ProjectController {
             return "addProjectForm";
         }
     }
+
+    @PostMapping("/{projectId}/members")
+    public String addProjectMember(@PathVariable Long projectId, @RequestParam String memberId, HttpServletRequest request) {
+        String userId = (String) request.getAttribute("validatedUserId");
+        projectService.addProjectMember(projectId, userId, List.of(memberId));
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + referer;
+    }
+
+    @PostMapping("/{projectId}/tags")
+    public String addProjectTag(@PathVariable Long projectId, @RequestParam String tagName, HttpServletRequest request) {
+        String userId = (String) request.getAttribute("validatedUserId");
+
+        projectService.addProjectTag(projectId, userId, tagName, request);
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + referer;
+    }
+
+    @PostMapping("/{projectId}/milestones")
+    public String addProjectMilestone(
+                    @PathVariable Long projectId,
+                    @RequestParam String milestoneTitle,
+                    @RequestParam String startDate,
+                    @RequestParam String endDate,
+                    HttpServletRequest request
+    ) {
+        String userId = (String) request.getAttribute("validatedUserId");
+
+        projectService.addProjectMilestone(projectId, userId, milestoneTitle, startDate, endDate, request);
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + referer;
+    }
 }

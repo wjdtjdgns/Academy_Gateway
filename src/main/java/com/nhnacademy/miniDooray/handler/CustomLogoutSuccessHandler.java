@@ -28,9 +28,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             for (Cookie cookie : cookies) {
                 if (SESSION_COOKIE_NAME.equals(cookie.getName())) {
                     String sessionId = cookie.getValue();
-                    String key = SESSION_PREFIX + sessionId;
-                    if (Objects.nonNull(sessionRedisTemplate.opsForHash().get(key, sessionId))) {
-                        sessionRedisTemplate.opsForHash().delete(key, sessionId);
+                    if (Objects.nonNull(sessionId)) {
+                        sessionRedisTemplate.opsForHash().delete(SESSION_PREFIX, sessionId);
                         Cookie deleteCookie = new Cookie(SESSION_COOKIE_NAME, null);
                         deleteCookie.setMaxAge(0);
                         deleteCookie.setPath("/");
@@ -40,6 +39,6 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
                 }
             }
         }
-        redirectStrategy.sendRedirect(request, response, "/login?logout");
+        redirectStrategy.sendRedirect(request, response, "/login");
     }
 }
