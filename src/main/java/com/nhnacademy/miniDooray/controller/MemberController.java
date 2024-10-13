@@ -2,19 +2,17 @@ package com.nhnacademy.miniDooray.controller;
 
 import com.nhnacademy.miniDooray.dto.MemberDto;
 import com.nhnacademy.miniDooray.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RequestMapping("/members")
 @Controller
 public class MemberController {
 
     private final MemberService memberService;
-
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @PostMapping(value = "/register")
     public String registerMember(@ModelAttribute MemberDto memberDto, Model model) {
