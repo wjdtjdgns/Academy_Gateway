@@ -1,6 +1,7 @@
 package com.nhnacademy.miniDooray.controller;
 
 import com.nhnacademy.miniDooray.dto.*;
+import com.nhnacademy.miniDooray.service.CommentService;
 import com.nhnacademy.miniDooray.service.ProjectService;
 import com.nhnacademy.miniDooray.service.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ public class TaskController {
 
     private final ProjectService projectService;
     private final TaskService taskService;
+    private final CommentService commentService;
 
     @GetMapping
     public String getTaskList(@PathVariable Long projectId, Model model, HttpServletRequest request) {
@@ -56,9 +58,24 @@ public class TaskController {
                           @RequestParam String title,
                           @RequestParam String content,
                           @RequestParam Long milestoneId,
-                          @RequestParam List<Long> tagIds) {
+                          @RequestParam(required = false) List<Long> tagIds,
+                          HttpServletRequest request
+    ) {
+        String userId = (String) request.getAttribute("validatedUserId");
 
-        // #TODO
+        taskService.createTask(projectId, userId, title, content, milestoneId, tagIds);
+
         return String.format("redirect:/projects/%d/tasks", projectId);
+    }
+
+    @GetMapping("/{taskId}")
+    public String getTaskDetail(@PathVariable Long projectId, @PathVariable Long taskId, Model model, HttpServletRequest request) {
+        String userId = (String) request.getAttribute("validatedUserId");
+        TaskDto task = taskService.getTask(projectId, taskId, userId);
+        List<CommentDto> comments = commentService.getCommentByTaskId(projectId, taskId, userId);
+
+        model.addAttribute("task", task);
+        model.addAttribute("comments", comments);
+        return "taskDetail";
     }
 }
