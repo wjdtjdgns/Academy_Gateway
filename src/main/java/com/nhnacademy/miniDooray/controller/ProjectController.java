@@ -2,6 +2,7 @@ package com.nhnacademy.miniDooray.controller;
 
 import com.nhnacademy.miniDooray.dto.ProjectDto;
 import com.nhnacademy.miniDooray.dto.ProjectRegisterDto;
+import com.nhnacademy.miniDooray.service.MemberService;
 import com.nhnacademy.miniDooray.service.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +18,21 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final MemberService memberService;
 
     @GetMapping
     public String getProjects(HttpServletRequest request,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
                               Model model) {
+        String userId = (String) request.getAttribute("validatedUserId");
+        String userName = (String) request.getAttribute("validatedUserName");
         List<ProjectDto> projects = projectService.getProjects(request, page, size);
+
         model.addAttribute("projects", projects);
+        model.addAttribute("userId", userId);
+        model.addAttribute("userName", userName);
+
         return "projectList";
     }
 

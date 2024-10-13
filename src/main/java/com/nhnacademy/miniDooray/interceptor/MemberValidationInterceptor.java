@@ -45,6 +45,7 @@ public class MemberValidationInterceptor implements HandlerInterceptor {
         }
 
         request.setAttribute("validatedUserId", userId);
+        request.setAttribute("validatedUserName", apiResponse.getBody().getName());
         return true;
     }
 }
