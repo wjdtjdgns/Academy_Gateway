@@ -1,10 +1,9 @@
 package com.nhnacademy.miniDooray.service;
 
 import com.nhnacademy.miniDooray.dto.ProjectDto;
-import com.nhnacademy.miniDooray.dto.ProjectResponse;
+import com.nhnacademy.miniDooray.dto.ProjectPageResponse;
 import com.nhnacademy.miniDooray.util.CookieUtil;
 import com.nhnacademy.miniDooray.util.RestApiClient;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -32,13 +31,20 @@ public class ProjectService {
                 throw new RuntimeException("Unauthorized: User is not logged in");
             }
 
-            String url = "http://localhost:8082/project?page=" + page + "&size=" + size;
+            String url = "http://localhost:8082/projects?page=" + page + "&size=" + size;
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-USER-ID", userId);
 
-            ResponseEntity<ProjectResponse> response = restApiClient.sendRequestWithHeaders(url, HttpMethod.GET, null, headers, ProjectResponse.class);
+            ResponseEntity<ProjectPageResponse> response = restApiClient.sendRequestWithHeaders(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    headers,
+                    ProjectPageResponse.class
+            );
 
-            return response.getBody().getProjects();
+            List<ProjectDto> projects = response.getBody().getContent();
+            return projects;
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch projects", e);
         }

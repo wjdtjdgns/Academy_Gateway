@@ -1,5 +1,6 @@
 package com.nhnacademy.miniDooray.dto;
 
+import com.nhnacademy.miniDooray.common.ProjectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectDto {
-    private Long projectId;
-    private String projectName;
-    private String status;
+    private Long id;
+    private String name;
+    private ProjectStatus status;
     private String adminId;
-    private List<MemberDto> members;
+    private List<String> memberIds;
 }
