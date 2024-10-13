@@ -1,6 +1,7 @@
 package com.nhnacademy.miniDooray.provider;
 
 import com.nhnacademy.miniDooray.dto.LoginRequest;
+import com.nhnacademy.miniDooray.dto.MemberDto;
 import com.nhnacademy.miniDooray.util.RestApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 
@@ -23,32 +25,34 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private RestApiClient restApiClient;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String id = authentication.getName();
-        String password = authentication.getCredentials().toString();
+        String rawPassword = authentication.getCredentials().toString();
 
         try {
-            String url = "http://localhost:8081/member/login";
-            LoginRequest request = new LoginRequest(id, password);
-            ResponseEntity<Void> response = restApiClient.sendPostRequest(url, request, Void.class);
+            String url = "http://localhost:8081/member/" + id;
+            ResponseEntity<MemberDto> response = restApiClient.sendGetRequest(url, MemberDto.class);
 
-            if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-                List<GrantedAuthority> authorities = Collections.emptyList();
-                return new UsernamePasswordAuthenticationToken(id, password, authorities);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                MemberDto member = response.getBody();
+                if (passwordEncoder.matches(rawPassword, member.getPassword())) {
+                    List<GrantedAuthority> authorities = Collections.emptyList();
+                    return new UsernamePasswordAuthenticationToken(id, rawPassword, authorities);
+                } else {
+                    throw new BadCredentialsException("Invalid credentials");
+                }
             } else {
-                throw new BadCredentialsException("Invalid credentials");
+                throw new BadCredentialsException("Member not found");
             }
         } catch (HttpStatusCodeException e) {
-            if (e.getStatusCode().value() == 400) {
-                throw new BadCredentialsException("Bad request: Invalid data format", e);
-            } else if (e.getStatusCode().value() == 401) {
-                throw new BadCredentialsException("Unauthorized: Invalid credentials", e);
-            } else {
-                throw new BadCredentialsException("Authentication failed", e);
-            }
+            throw new BadCredentialsException("Authentication failed", e);
         }
     }
+
 
     @Override
     public boolean supports(Class<?> authentication) {

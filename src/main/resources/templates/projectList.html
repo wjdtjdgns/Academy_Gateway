@@ -1,0 +1,75 @@
+<!-- projectList.html: 프로젝트 리스트 페이지 -->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>프로젝트 리스트</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h2>프로젝트 리스트</h2>
+<div id="project-list">
+    <ul>
+        <!-- 프로젝트 목록을 서버에서 렌더링 -->
+        <li th:each="project : ${projects}" class="project-item" th:data-project-id="${project.projectId}" th:text="${project.projectName}"></li>
+    </ul>
+</div>
+
+<div id="task-list">
+    <!-- 선택한 프로젝트의 태스크 리스트가 여기에 표시됩니다. -->
+</div>
+
+<div id="task-detail">
+    <!-- 선택한 태스크의 상세 정보가 여기에 표시됩니다. -->
+</div>
+
+<script>
+    $(document).ready(function() {
+        // 프로젝트 아이템 클릭 시 태스크 리스트 요청
+        $('#project-list').on('click', '.project-item', function() {
+            const projectId = $(this).data('project-id');
+            // 태스크 리스트를 가져오기 위한 AJAX 요청
+            $.ajax({
+                url: '/projects/' + projectId + '/tasks',
+                method: 'GET',
+                success: function(data) {
+                    // 기존 태스크 리스트를 초기화
+                    $('#task-list').empty();
+                    // 새로운 태스크 리스트 추가
+                    data.tasks.forEach(task => {
+                        $('#task-list').append('<div class="task-item" data-task-id="' + task.taskId + '">' + task.title + '</div>');
+                    });
+                },
+                error: function() {
+                    alert('태스크 리스트를 가져오는 데 실패했습니다.');
+                }
+            });
+        });
+
+        // 태스크 아이템 클릭 시 상세 정보 요청
+        $('#task-list').on('click', '.task-item', function() {
+            const taskId = $(this).data('task-id');
+            $.ajax({
+                url: '/tasks/' + taskId,
+                method: 'GET',
+                success: function(data) {
+                    // 기존 태스크 상세 정보를 초기화
+                    $('#task-detail').empty();
+                    // 새로운 태스크 상세 정보 추가
+                    $('#task-detail').append('<h3>' + data.title + '</h3>');
+                    $('#task-detail').append('<p>' + data.content + '</p>');
+                    $('#task-detail').append('<div id="comments"><h4>댓글 목록</h4></div>');
+                    data.comments.forEach(comment => {
+                        $('#comments').append('<p>' + comment.memberName + ': ' + comment.content + '</p>');
+                    });
+                },
+                error: function() {
+                    alert('태스크 상세 정보를 가져오는 데 실패했습니다.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
