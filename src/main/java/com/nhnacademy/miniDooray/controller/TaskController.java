@@ -73,9 +73,12 @@ public class TaskController {
         String userId = (String) request.getAttribute("validatedUserId");
         TaskDto task = taskService.getTask(projectId, taskId, userId);
         List<CommentDto> comments = commentService.getCommentByTaskId(projectId, taskId, userId);
+        List<TaskTagDto> tags = taskService.getTagByTaskId(projectId, taskId, userId);
 
         model.addAttribute("task", task);
         model.addAttribute("comments", comments);
+        model.addAttribute("tags", tags);
+
         return "taskDetail";
     }
 }

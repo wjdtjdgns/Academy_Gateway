@@ -18,6 +18,14 @@
 <div id="task-detail">
   <h3 th:text="${task.title}">태스크 제목</h3>
   <p th:text="${task.content}">태스크 내용</p>
+  <div>
+    <div>태그</div>
+    <ul>
+      <li th:each="tag : ${tags}" th:if="${tag.selected}">
+        <span th:text="${tag.tag.name}"></span>
+      </li>
+    </ul>
+  </div>
 
   <br />
   <hr />
