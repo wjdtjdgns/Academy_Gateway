@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>프로젝트 리스트</title>
+</head>
+<body>
+<h2>프로젝트 리스트</h2>
+
+<div>
+    <div><span>ID: </span> <span th:text="${userId}"></span></div>
+    <div><span>Name: </span> <span th:text="${userName}"></span></div>
+</div>
+
+<br />
+
+<div>
+    <form th:action="@{/logout}" method="post" style="display: inline;">
+        <button type="submit">로그아웃</button>
+    </form>
+</div>
+
+<br />
+
+<div>
+    <a href="/projects/add">프로젝트 추가</a>
+</div>
+<div id="project-list">
+    <ul>
+        <li th:each="project : ${projects}" class="project-item">
+            <a th:href="'/projects/' + ${project.id} + '/tasks'" th:text="${project.name}"></a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
