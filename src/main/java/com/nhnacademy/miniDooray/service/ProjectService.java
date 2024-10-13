@@ -3,35 +3,25 @@ package com.nhnacademy.miniDooray.service;
 import com.nhnacademy.miniDooray.dto.ProjectDto;
 import com.nhnacademy.miniDooray.dto.ProjectPageResponse;
 import com.nhnacademy.miniDooray.dto.ProjectRegisterDto;
-import com.nhnacademy.miniDooray.util.CookieUtil;
 import com.nhnacademy.miniDooray.util.RestApiClient;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class ProjectService {
 
     private final RestApiClient restApiClient;
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    public ProjectService(RestApiClient restApiClient, RedisTemplate<String, Object> redisTemplate) {
-        this.restApiClient = restApiClient;
-        this.redisTemplate = redisTemplate;
-    }
 
     public List<ProjectDto> getProjects(HttpServletRequest request, int page, int size) {
+        String userId = (String) request.getAttribute("validatedUserId");
         try {
-            String userId = CookieUtil.getUserIdFromSession(request, redisTemplate);
-            if (userId == null) {
-                throw new RuntimeException("Unauthorized: User is not logged in");
-            }
 
             String url = "http://localhost:8082/projects?page=" + page + "&size=" + size;
             HttpHeaders headers = new HttpHeaders();
@@ -53,10 +43,8 @@ public class ProjectService {
     }
 
     public ProjectDto createProject(HttpServletRequest request, ProjectRegisterDto projectDto) {
-        String userId = CookieUtil.getUserIdFromSession(request, redisTemplate);
-        if (userId == null) {
-            throw new RuntimeException("Unauthorized: User is not logged in");
-        }
+        String userId = (String) request.getAttribute("validatedUserId");
+
         try {
             String url = "http://localhost:8082/projects";
 
