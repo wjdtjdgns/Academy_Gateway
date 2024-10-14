@@ -17,6 +17,7 @@ import java.util.List;
 public class ProjectService {
 
     private final RestApiClient restApiClient;
+    private final MemberService memberService;
 
     public List<ProjectDto> getProjects(HttpServletRequest request, int page, int size) {
         String userId = (String) request.getAttribute("validatedUserId");
@@ -170,6 +171,10 @@ public class ProjectService {
 
     public ProjectDto addProjectMember(Long projectId, String userId, List<String> memberIds) {
         try {
+            if (!memberService.isExistMembers(userId, memberIds)) {
+                throw new RuntimeException("사용자가 존재하지 않습니다");
+            }
+
             String url = "http://localhost:8082/projects/" + projectId + "/members";
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-USER-ID", userId);
